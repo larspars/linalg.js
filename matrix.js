@@ -292,7 +292,12 @@ var linalg = (function() {
             }
             for (var i = 0; i < this._typedArray.length; i++) {
                 var a = this._typedArray[i],
-                    b = other._typedArray[i];
+                    b = other._typedArray[i],
+                    aIsNaN = isNaN(a),
+                    bIsNaN = isNaN(b);
+                if ((aIsNaN && !bIsNaN) || (!aIsNaN && bIsNaN)) {
+                    return false;
+                }
                  //formula taken from numpy
                 if (Math.abs(a - b) > (atol + rtol * Math.abs(b))) {
                     return false;

@@ -1,7 +1,12 @@
 
+function AssertionError(msg) {
+    this.message = msg;
+    this.name = "AssertionError";
+}
+AssertionError.prototype = new Error();
 function assert(bool) {
     if (!bool) {
-        throw new Error("Assertion failed");
+        throw new AssertionError("Assertion failed");
     }
 }
 
@@ -422,6 +427,44 @@ var tests = {
         console.log(expectedInverse.toString());
         console.log(matrix.inverse().toString());
         assert(matrix.inverse().allClose(expectedInverse));
+    },
+    testInverseOfSingular: function() {
+        var matrix = new Matrix([[1, 1, 1], 
+                                 [2, 2, 2], 
+                                 [3, 3, 3]]);
+        var res = matrix.inverse();
+        try {
+            matrix.inverse(); //should throw a meaningful exception
+            assert(false); //shouldn't get here
+        } catch (e) {
+            if (e instanceof AssertionError) throw e;
+        }
+    },
+    testInverseRequiringRowSubstitution: function() {
+        var matrix = new Matrix([[1, 1, 1], 
+                                 [0, 0, 7], 
+                                 [4, 3, 3]]);
+       var expectedInverse = new Matrix([[-3.,  0.        ,  1.],
+                                         [ 4., -0.14285714, -1.],
+                                         [ 0.,  0.14285714,  0.]])
+                                         
+        console.log(expectedInverse.toString());
+        console.log(matrix.inverse().toString());
+        assert(matrix.inverse().allClose(expectedInverse));
+    },
+    testAllCloseWithInfinities: function() {
+        var matrix = new Matrix([[1, 1], 
+                                 [Infinity, -Infinity]]);
+        var matrix2 = new Matrix([[1, 1], 
+                                 [-Infinity, -Infinity]]);
+        assert(!matrix.allClose(matrix2))
+    },
+    testAllCloseWithNaNs: function() {
+        var matrix = new Matrix([[1, 1], 
+                                 [NaN, 0]]);
+        var matrix2 = new Matrix([[1, 1], 
+                                 [1, 0]]);
+        assert(!matrix.allClose(matrix2))
     },
     testDeterminant: function() {
         var arr = new Matrix([[100, 80, 60, 40], 
