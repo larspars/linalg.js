@@ -36,3 +36,5 @@ Currently, the following functions are implemented: Matrix multiplication, matri
 ##Will this code work in all circumstances?
 
 Probably not.
+
+License: MIT
